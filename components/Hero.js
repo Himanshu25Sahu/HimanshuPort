@@ -45,7 +45,7 @@ export default function Hero() {
   ]
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-black border-b-8 border-cyan-400">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-black border-b-8 border-cyan-400 pt-25 md:pt-0">
       
       {/* Animated Mesh Gradient Background */}
       <div className="absolute inset-0 opacity-30">

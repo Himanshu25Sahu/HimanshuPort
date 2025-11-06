@@ -1,10 +1,146 @@
 "use client"
 
+import { useState } from "react"
 import { useParams } from "next/navigation"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { ArrowLeft, Target, Zap, AlertCircle, TrendingUp, Lightbulb, Users, Code2 } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowLeft, Target, Zap, AlertCircle, TrendingUp, Lightbulb, Users, Code2, ChevronLeft, ChevronRight } from "lucide-react"
 import { projects } from "@/data/projects"
+
+function ImageCarousel({ images }) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+
+  const nextImage = () => {
+    setCurrentIndex((prev) => (prev + 1) % images.length)
+  }
+
+  const prevImage = () => {
+    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)
+  }
+
+  if (!images || images.length === 0) return null
+
+  const currentItem = images[currentIndex]
+  const isVideo = typeof currentItem === 'object' && currentItem.type === 'video'
+
+  return (
+    <motion.section
+      initial={{ y: 30, opacity: 0 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: 0.8 }}
+      className="mt-12"
+    >
+      <h2 className="text-2xl md:text-3xl font-black mb-6 text-black uppercase inline-block bg-cyan-400 px-6 py-3 border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
+        Project Gallery ({images.length} Items)
+      </h2>
+      
+      <div className="relative mt-8">
+        {/* Main Media Display */}
+        <div className="relative border-4 border-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(255,255,255,0.5)] bg-black aspect-video">
+          <AnimatePresence mode="wait">
+            {isVideo ? (
+              <motion.video
+                key={currentIndex}
+                src={currentItem.url}
+                controls
+                autoPlay
+                loop
+                muted
+                className="w-full h-full object-contain"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.3 }}
+              />
+            ) : (
+              <motion.img
+                key={currentIndex}
+                src={typeof currentItem === 'string' ? currentItem : currentItem.url}
+                alt={`Screenshot ${currentIndex + 1}`}
+                className="w-full h-full object-contain"
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
+          </AnimatePresence>
+
+          {/* Navigation Arrows */}
+          {images.length > 1 && (
+            <>
+              <motion.button
+                whileHover={{ x: -4, boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={prevImage}
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-cyan-400 border-4 border-black w-12 h-12 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-cyan-300 transition-colors z-10"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6 text-black" strokeWidth={3} />
+              </motion.button>
+
+              <motion.button
+                whileHover={{ x: 4, boxShadow: "4px 4px 0px 0px rgba(0, 0, 0, 1)" }}
+                whileTap={{ scale: 0.95 }}
+                onClick={nextImage}
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-cyan-400 border-4 border-black w-12 h-12 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:bg-cyan-300 transition-colors z-10"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6 text-black" strokeWidth={3} />
+              </motion.button>
+            </>
+          )}
+
+          {/* Image Counter */}
+          <div className="absolute bottom-4 right-4 bg-black border-4 border-white px-4 py-2 shadow-[4px_4px_0px_0px_rgba(255,255,255,0.5)]">
+            <span className="text-white font-black text-sm">
+              {currentIndex + 1} / {images.length}
+            </span>
+          </div>
+        </div>
+
+        {/* Thumbnail Navigation */}
+        {images.length > 1 && (
+          <div className="flex gap-3 mt-6 overflow-x-auto pb-2">
+            {images.map((item, i) => {
+              const isThumbVideo = typeof item === 'object' && item.type === 'video'
+              const thumbSrc = isThumbVideo ? null : (typeof item === 'string' ? item : item.url)
+              
+              return (
+                <motion.button
+                  key={i}
+                  onClick={() => setCurrentIndex(i)}
+                  whileHover={{ y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`relative flex-shrink-0 w-20 h-20 border-4 overflow-hidden shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                    i === currentIndex
+                      ? "border-cyan-400 scale-110"
+                      : "border-white opacity-60 hover:opacity-100"
+                  }`}
+                >
+                  {isThumbVideo ? (
+                    <div className="w-full h-full bg-purple-500 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+                      </svg>
+                    </div>
+                  ) : (
+                    <img
+                      src={thumbSrc}
+                      alt={`Thumbnail ${i + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </motion.button>
+              )
+            })}
+          </div>
+        )}
+      </div>
+    </motion.section>
+  )
+}
 
 export default function BlogPost() {
   const params = useParams()
@@ -290,29 +426,9 @@ export default function BlogPost() {
           </motion.section>
         )}
 
-        {/* Image Gallery */}
+        {/* Image Gallery with Carousel */}
         {project.images && project.images.length > 1 && (
-          <motion.section
-            initial={{ y: 30, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.8 }}
-          >
-            <h2 className="text-2xl md:text-3xl font-black mb-6 text-white uppercase inline-block bg-cyan-400 px-6 py-3 border-4 border-white shadow-[6px_6px_0px_0px_rgba(255,255,255,0.3)]">
-              Project Screenshots
-            </h2>
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
-              {project.images.slice(1).map((image, i) => (
-                <motion.div
-                  key={i}
-                  whileHover={{ scale: 1.02, x: -4, y: -4 }}
-                  className="border-4 border-white overflow-hidden shadow-[6px_6px_0px_0px_rgba(255,255,255,0.5)] cursor-pointer"
-                >
-                  <img src={image} alt={`Screenshot ${i + 1}`} className="w-full h-64 object-cover" />
-                </motion.div>
-              ))}
-            </div>
-          </motion.section>
+          <ImageCarousel images={project.images.slice(0)} />
         )}
 
         {/* Back Button */}
