@@ -111,7 +111,7 @@ export default function NeoBrutalVerticalNav() {
         >
           <div className="flex justify-between items-center p-3 px-4 gap-2 overflow-x-auto">
             {/* Main Nav Items */}
-            {navItems.map((item, index) => (
+            {navItems.map((item, index) => ( 
 <motion.a
   key={item.name}
   href={item.href}

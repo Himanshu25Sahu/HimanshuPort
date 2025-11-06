@@ -430,7 +430,7 @@ export default function BlogPost() {
         {project.images && project.images.length > 1 && (
           <ImageCarousel images={project.images.slice(0)} />
         )}
-
+ 
         {/* Back Button */}
         <motion.div 
           initial={{ y: 30, opacity: 0 }} 

@@ -50,7 +50,7 @@ export default function Hero() {
       {/* Animated Mesh Gradient Background */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute top-0 left-0 w-full h-full">
-          <motion.div
+          <motion.div 
             animate={{
               background: [
                 'radial-gradient(circle at 20% 50%, rgba(34, 211, 238, 0.3) 0%, transparent 50%)',
